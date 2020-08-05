@@ -85,7 +85,6 @@ public class JavaTextDocumentService implements TextDocumentService {
 
     @Override
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
-        logger.info("Complete: {}", MarshallerUtil.toJson(position));
         try {
             Either<List<CompletionItem>, CompletionList> future = this.textDocumentService.completion(position).get(10, TimeUnit.SECONDS);
             return CompletableFuture.supplyAsync(() -> future);
@@ -103,6 +102,8 @@ public class JavaTextDocumentService implements TextDocumentService {
 
     @Override
     public void didChange(DidChangeTextDocumentParams params) {
+        logger.info("{}", MarshallerUtil.toJson(params));
+
         this.textDocumentService.didChange(params);
     }
 

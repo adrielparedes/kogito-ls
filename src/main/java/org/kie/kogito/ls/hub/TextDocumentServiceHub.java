@@ -2,6 +2,8 @@ package org.kie.kogito.ls.hub;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -58,6 +60,7 @@ import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.kie.kogito.ls.service.Service;
+import org.kie.kogito.ls.util.MarshallerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,21 +86,25 @@ public class TextDocumentServiceHub extends ServiceHub implements TextDocumentSe
 
     @Override
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
+        logger.info("{}", MarshallerUtil.toJson(position));
         return getService(position.getTextDocument().getUri()).getTextDocumentService().completion(position);
     }
 
     @Override
     public void didOpen(DidOpenTextDocumentParams params) {
+        logger.info("{}", MarshallerUtil.toJson(params));
         getService(params.getTextDocument().getUri()).getTextDocumentService().didOpen(params);
     }
 
     @Override
     public void didChange(DidChangeTextDocumentParams params) {
+        logger.info("{}", MarshallerUtil.toJson(params));
         getService(params.getTextDocument().getUri()).getTextDocumentService().didChange(params);
     }
 
     @Override
     public void didClose(DidCloseTextDocumentParams params) {
+        logger.info("{}", MarshallerUtil.toJson(params));
         getService(params.getTextDocument().getUri()).getTextDocumentService().didClose(params);
     }
 
@@ -113,7 +120,8 @@ public class TextDocumentServiceHub extends ServiceHub implements TextDocumentSe
 
     @Override
     public CompletableFuture<CompletionItem> resolveCompletionItem(CompletionItem unresolved) {
-        throw new UnsupportedOperationException();
+        logger.info("{}", MarshallerUtil.toJson(unresolved));
+        return null;
     }
 
     @Override
@@ -123,6 +131,7 @@ public class TextDocumentServiceHub extends ServiceHub implements TextDocumentSe
 
     @Override
     public CompletableFuture<SignatureHelp> signatureHelp(SignatureHelpParams params) {
+        logger.info("{}", MarshallerUtil.toJson(params));
         return getService(params.getTextDocument().getUri()).getTextDocumentService().signatureHelp(params);
     }
 

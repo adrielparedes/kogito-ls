@@ -13,10 +13,14 @@ import org.eclipse.lsp4j.ExecuteCommandParams;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.WorkspaceSymbolParams;
 import org.eclipse.lsp4j.services.WorkspaceService;
+import org.kie.kogito.ls.util.MarshallerUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class JavaWorkspaceService implements WorkspaceService {
 
+    private final Logger logger = LoggerFactory.getLogger(JavaWorkspaceService.class);
     private final WorkspaceService workspaceService;
 
     @Inject
@@ -41,6 +45,7 @@ public class JavaWorkspaceService implements WorkspaceService {
 
     @Override
     public void didChangeWatchedFiles(DidChangeWatchedFilesParams didChangeWatchedFilesParams) {
+        logger.info("{}", MarshallerUtil.toJson(didChangeWatchedFilesParams));
         this.workspaceService.didChangeWatchedFiles(didChangeWatchedFilesParams);
     }
 

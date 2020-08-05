@@ -10,7 +10,11 @@ import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.ExecuteCommandOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
+import org.eclipse.lsp4j.InitializedParams;
+import org.eclipse.lsp4j.SaveOptions;
 import org.eclipse.lsp4j.ServerCapabilities;
+import org.eclipse.lsp4j.TextDocumentSyncKind;
+import org.eclipse.lsp4j.TextDocumentSyncOptions;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
@@ -47,15 +51,32 @@ public class KogitoLanguageServer implements LanguageServer {
         InitializeResult results = new InitializeResult();
 
         ServerCapabilities serverCapabilities = new ServerCapabilities();
-        serverCapabilities.setCompletionProvider(new CompletionOptions());
+        CompletionOptions completionOptions = new CompletionOptions();
+        completionOptions.setResolveProvider(true);
+        serverCapabilities.setCompletionProvider(completionOptions);
 
         CodeActionOptions options = new CodeActionOptions();
         serverCapabilities.setCodeActionProvider(options);
+
+        TextDocumentSyncOptions textDocumentSyncOptions = new TextDocumentSyncOptions();
+        SaveOptions saveOptions = new SaveOptions();
+        saveOptions.setIncludeText(true);
+        textDocumentSyncOptions.setSave(saveOptions);
+        textDocumentSyncOptions.setOpenClose(true);
+        textDocumentSyncOptions.setWillSave(true);
+        textDocumentSyncOptions.setWillSaveWaitUntil(true);
+        textDocumentSyncOptions.setChange(TextDocumentSyncKind.Full);
+        serverCapabilities.setTextDocumentSync(textDocumentSyncOptions);
 
         serverCapabilities.setExecuteCommandProvider(new ExecuteCommandOptions());
 
         results.setCapabilities(serverCapabilities);
         return CompletableFuture.supplyAsync(() -> results);
+    }
+
+    @Override
+    public void initialized(InitializedParams params) {
+        logger.info("Initialized Params: {}", MarshallerUtil.toJson(params));
     }
 
     @Override
