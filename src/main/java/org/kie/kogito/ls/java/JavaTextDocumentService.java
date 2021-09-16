@@ -1,3 +1,19 @@
+/*
+ * Copyright 2021 Red Hat Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package org.kie.kogito.ls.java;
 
 import java.util.ArrayList;
@@ -58,6 +74,8 @@ import org.eclipse.lsp4j.WillSaveTextDocumentParams;
 import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
+import org.kie.kogito.ls.engine.ActivatorChecker;
+import org.kie.kogito.ls.engine.JavaEngine;
 import org.kie.kogito.ls.util.MarshallerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,10 +85,14 @@ public class JavaTextDocumentService implements TextDocumentService {
 
     private final Logger logger = LoggerFactory.getLogger(JavaTextDocumentService.class);
     private final TextDocumentService textDocumentService;
+    private ActivatorChecker activatorChecker;
+    private JavaEngine javaEngine;
 
     @Inject
-    public JavaTextDocumentService(@Java TextDocumentService textDocumentService) {
+    public JavaTextDocumentService(@Java TextDocumentService textDocumentService, ActivatorChecker activatorChecker, JavaEngine javaEngine) {
         this.textDocumentService = textDocumentService;
+        this.activatorChecker = activatorChecker;
+        this.javaEngine = javaEngine;
     }
 
     @Override
@@ -85,14 +107,7 @@ public class JavaTextDocumentService implements TextDocumentService {
 
     @Override
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
-        try {
-            Either<List<CompletionItem>, CompletionList> future = this.textDocumentService.completion(position).get(10, TimeUnit.SECONDS);
-            return CompletableFuture.supplyAsync(() -> future);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Either<List<CompletionItem>, CompletionList> future = Either.forLeft(new ArrayList<>());
-            return CompletableFuture.supplyAsync(() -> future);
-        }
+        return this.textDocumentService.completion(position);
     }
 
     @Override

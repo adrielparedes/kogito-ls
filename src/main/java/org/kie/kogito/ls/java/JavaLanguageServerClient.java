@@ -1,3 +1,19 @@
+/*
+ * Copyright 2021 Red Hat Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package org.kie.kogito.ls.java;
 
 import java.util.List;
@@ -9,11 +25,11 @@ import javax.inject.Inject;
 import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
 import org.eclipse.lsp4j.ApplyWorkspaceEditResponse;
 import org.eclipse.lsp4j.ConfigurationParams;
+import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.MessageActionItem;
 import org.eclipse.lsp4j.MessageParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.RegistrationParams;
-import org.eclipse.lsp4j.SemanticHighlightingParams;
 import org.eclipse.lsp4j.ShowMessageRequestParams;
 import org.eclipse.lsp4j.UnregistrationParams;
 import org.eclipse.lsp4j.WorkspaceFolder;
@@ -59,6 +75,9 @@ public class JavaLanguageServerClient implements LanguageClient {
 
     @Override
     public void publishDiagnostics(PublishDiagnosticsParams publishDiagnosticsParams) {
+        List<Diagnostic> diagnostics = publishDiagnosticsParams.getDiagnostics();
+        logger.info(publishDiagnosticsParams.getUri());
+        logger.info(MarshallerUtil.toJson(diagnostics));
     }
 
     @Override
@@ -84,10 +103,5 @@ public class JavaLanguageServerClient implements LanguageClient {
     @Override
     public CompletableFuture<List<Object>> configuration(ConfigurationParams configurationParams) {
         return null;
-    }
-
-    @Override
-    public void semanticHighlighting(SemanticHighlightingParams params) {
-
     }
 }
